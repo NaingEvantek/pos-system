@@ -51,12 +51,14 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 // Add CORS
+var originSettings = builder.Configuration.GetSection("OriginSettings");
+var allowOrigin = originSettings["Frontend"] ?? "http://localhost:3000";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000", "http://localhost:5173")
+            policy.WithOrigins(allowOrigin)
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });

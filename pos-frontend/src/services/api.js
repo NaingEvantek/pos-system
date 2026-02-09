@@ -1,7 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api';
-const PRINT_SERVICE_URL = 'http://localhost:5001/api';
+const API_BASE_URL =
+  import.meta.env.API_BASE_URL;
+const PRINT_SERVICE_URL =
+  import.meta.env.PRINT_SERVICE_URL;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -28,7 +30,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response ? .status === 401) {
       // Token expired or invalid, redirect to login
       localStorage.removeItem('token');
       localStorage.removeItem('user');
@@ -47,7 +49,10 @@ const printApi = axios.create({
 
 // Authentication
 export const login = async (username, password) => {
-  const response = await api.post('/auth/login', { username, password });
+  const response = await api.post('/auth/login', {
+    username,
+    password
+  });
   return response.data;
 };
 
