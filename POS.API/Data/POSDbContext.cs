@@ -24,11 +24,8 @@ public class POSDbContext : DbContext
 
         // Seed initial products with MMK prices (no decimals)
         modelBuilder.Entity<Product>().HasData(
-            new Product { Id = 1, Name = "Laptop", Description = "Gaming Laptop", Price = 1200000, RetailPrice = 1200000, WholesalePrice = 1000000, Stock = 0, Category = "Electronics" },
-            new Product { Id = 2, Name = "Mouse", Description = "Wireless Mouse", Price = 25000, RetailPrice = 25000, WholesalePrice = 20000, Stock = 0, Category = "Electronics" },
-            new Product { Id = 3, Name = "Keyboard", Description = "Mechanical Keyboard", Price = 80000, RetailPrice = 80000, WholesalePrice = 65000, Stock = 0, Category = "Electronics" },
-            new Product { Id = 4, Name = "Monitor", Description = "27 inch 4K Monitor", Price = 400000, RetailPrice = 400000, WholesalePrice = 350000, Stock = 0, Category = "Electronics" },
-            new Product { Id = 5, Name = "Headphones", Description = "Noise Cancelling", Price = 150000, RetailPrice = 150000, WholesalePrice = 120000, Stock = 0, Category = "Electronics" }
+            new Product { Id = 1, Name = "ကော်ဂျူလှိုင်း", Description = "အပြာရောင်", Price = 12000, RetailPrice = 12000, WholesalePrice = 11000, Stock = 100, Category = "ဂါဝန်" }
+
         );
 
         modelBuilder.Entity<User>().HasData(
