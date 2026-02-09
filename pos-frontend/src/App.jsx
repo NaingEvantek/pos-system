@@ -15,6 +15,7 @@ import CustomerManagement from "./components/CustomerManagement";
 import SalesHistory from "./components/SalesHistory";
 import Reports from "./components/Reports";
 import "./index.css";
+import logo from "./assets/images/zllogo4.png";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -182,6 +183,20 @@ function App() {
       const sale = await createSale(saleData);
 
       // Print receipt
+
+      async function imageToBase64(url) {
+        const res = await fetch(url);
+        const blob = await res.blob();
+
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result); // data:image/png;base64,...
+          reader.readAsDataURL(blob);
+        });
+      }
+
+      const logoBase64 = await imageToBase64(logo);
+
       const receiptData = {
         saleId: sale.id,
         saleDate: sale.saleDate,
@@ -194,6 +209,7 @@ function App() {
         paymentAmount: checkoutData.paymentAmount,
         balance: checkoutData.balance,
         items: sale.items,
+        logoBase64: logoBase64,
       };
 
       try {

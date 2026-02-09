@@ -53,7 +53,7 @@ public class PrintController : ControllerBase
         try
         {
             var printers = new List<string>();
-            
+
             // Get installed printers (Windows only)
             foreach (string printer in PrinterSettings.InstalledPrinters)
             {
@@ -125,99 +125,195 @@ public class PrintController : ControllerBase
     private string GenerateReceiptHtml(ReceiptModel receipt)
     {
         var sb = new StringBuilder();
-        
+
         sb.AppendLine("<!DOCTYPE html>");
         sb.AppendLine("<html>");
         sb.AppendLine("<head>");
+        sb.AppendLine("<meta charset='utf-8' />");
         sb.AppendLine("<style>");
-        sb.AppendLine("body { font-family: 'Courier New', monospace; width: 300px; margin: 20px auto; }");
-        sb.AppendLine(".header { text-align: center; margin-bottom: 20px; }");
-        sb.AppendLine(".divider { border-bottom: 1px dashed #000; margin: 10px 0; }");
-        sb.AppendLine(".item { display: flex; justify-content: space-between; margin: 5px 0; }");
-        sb.AppendLine(".total { font-weight: bold; font-size: 16px; margin-top: 10px; }");
-        sb.AppendLine(".discount { color: #dc3545; }");
-        sb.AppendLine(".balance { color: #28a745; font-weight: bold; }");
-        sb.AppendLine("@media print { body { margin: 0; } }");
+
+        sb.AppendLine(@"
+        body {
+            font-family: Arial, sans-serif;
+            width: 800px;
+            margin: 20px auto;
+            font-size: 14px;
+        }
+
+        .header {
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: #c2185b;
+        }
+
+        .header p {
+            margin: 2px 0;
+            font-size: 13px;
+        }
+
+        .info {
+            margin-top: 15px;
+        }
+
+        .info table {
+            width: 100%;
+        }
+
+        .info td {
+            padding: 4px;
+        }
+
+        table.ledger {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table.ledger th,
+        table.ledger td {
+            border: 1px solid #c2185b;
+            padding: 6px;
+            text-align: center;
+        }
+
+        table.ledger th {
+            background-color: #f8bbd0;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .totals {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .totals td {
+            padding: 6px;
+        }
+
+        .totals .label {
+            text-align: right;
+            font-weight: bold;
+            color: #c2185b;
+        }
+
+        .signature {
+            margin-top: 30px;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+            }
+        }
+    ");
+
         sb.AppendLine("</style>");
         sb.AppendLine("</head>");
         sb.AppendLine("<body>");
-        
+
+
+        // Header
         sb.AppendLine("<div class='header'>");
-        sb.AppendLine("<h2>POS SYSTEM</h2>");
-        sb.AppendLine("<p>Sales Receipt</p>");
+        if (!string.IsNullOrEmpty(receipt.LogoBase64))
+        {
+            sb.AppendLine($@"
+        <div style='text-align:center;margin-bottom:10px'>
+            <img src='{receipt.LogoBase64}' style='max-width:150px;' />
+        </div>
+    ");
+        }
+        sb.AppendLine("<h1>ZarLi Fashion</h1>");
+        sb.AppendLine("<p>အထည်ချုပ်နှင့် ဖက်ရှင်</p>");
+        sb.AppendLine("<p>09-797510450 , 09-961694250 , 09-797465345</p>");
         sb.AppendLine("</div>");
-        
-        sb.AppendLine("<div class='divider'></div>");
-        
-        sb.AppendLine($"<p>Receipt #: {receipt.SaleId}</p>");
-        sb.AppendLine($"<p>Date: {receipt.SaleDate:yyyy-MM-dd HH:mm:ss}</p>");
-        sb.AppendLine($"<p>Customer: {receipt.CustomerName}</p>");
-        sb.AppendLine($"<p>Payment: {receipt.PaymentMethod}</p>");
-        
-        sb.AppendLine("<div class='divider'></div>");
-        
-        sb.AppendLine("<h3>Items:</h3>");
+
+        // Customer Info
+        sb.AppendLine("<div class='info'>");
+        sb.AppendLine("<table>");
+        sb.AppendLine("<tr>");
+        sb.AppendLine($"<td><b>Customer:</b> {receipt.CustomerName}</td>");
+        sb.AppendLine($"<td><b>Invoice No:</b> 0000{receipt.SaleId.ToString("D6")}</td>");
+        sb.AppendLine("</tr>");
+        sb.AppendLine("<tr>");
+        // sb.AppendLine($"<td><b>Phone:</b> {receipt.CustomerPhone}</td>");
+        sb.AppendLine($"<td><b>Date:</b> {receipt.SaleDate:yyyy-MM-dd}</td>");
+        sb.AppendLine("</tr>");
+        sb.AppendLine("</table>");
+        sb.AppendLine("</div>");
+
+        // Ledger Table
+        sb.AppendLine("<table class='ledger'>");
+        sb.AppendLine("<thead>");
+        sb.AppendLine("<tr>");
+        sb.AppendLine("<th>No</th>");
+        sb.AppendLine("<th>Description</th>");
+        sb.AppendLine("<th>Qty</th>");
+        sb.AppendLine("<th>Unit Price</th>");
+        sb.AppendLine("<th>Amount</th>");
+        sb.AppendLine("</tr>");
+        sb.AppendLine("</thead>");
+        sb.AppendLine("<tbody>");
+
+        int index = 1;
         foreach (var item in receipt.Items)
         {
-            sb.AppendLine("<div class='item'>");
-            sb.AppendLine($"<span>{item.ProductName} x{item.Quantity}</span>");
-            sb.AppendLine($"<span>${item.Total:F2}</span>");
-            sb.AppendLine("</div>");
+            sb.AppendLine("<tr>");
+            sb.AppendLine($"<td>{index++}</td>");
+            sb.AppendLine($"<td class='text-left'>{item.ProductName}</td>");
+            sb.AppendLine($"<td>{item.Quantity}</td>");
+            sb.AppendLine($"<td>{item.UnitPrice:N0}</td>");
+            sb.AppendLine($"<td>{item.Total:N0}</td>");
+            sb.AppendLine("</tr>");
         }
-        
-        sb.AppendLine("<div class='divider'></div>");
-        
-        sb.AppendLine("<div class='item'>");
-        sb.AppendLine($"<span>Subtotal:</span>");
-        sb.AppendLine($"<span>${receipt.Subtotal:F2}</span>");
+
+        var emptyRows = 16 - receipt.Items.Count;
+        // Fill empty rows up to 16 like the paper invoice
+        for (int i = index; i <= emptyRows; i++)
+        {
+            sb.AppendLine("<tr>");
+            sb.AppendLine($"<td>{i}</td>");
+            sb.AppendLine("<td></td>");
+            sb.AppendLine("<td></td>");
+            sb.AppendLine("<td></td>");
+            sb.AppendLine("<td></td>");
+            sb.AppendLine("</tr>");
+        }
+
+        sb.AppendLine("</tbody>");
+        sb.AppendLine("</table>");
+
+        // Totals
+        sb.AppendLine("<table class='totals'>");
+        sb.AppendLine("<tr>");
+        sb.AppendLine("<td colspan='2'>");
+        sb.AppendLine("<div class='signature'>");
+        sb.AppendLine("<p>အမည် / လက်မှတ် ....................................................</p>");
         sb.AppendLine("</div>");
-        
-        if (receipt.Discount > 0)
-        {
-            sb.AppendLine("<div class='item discount'>");
-            sb.AppendLine($"<span>Discount:</span>");
-            sb.AppendLine($"<span>-${receipt.Discount:F2}</span>");
-            sb.AppendLine("</div>");
-        }
-        
-        if (receipt.Tax > 0)
-        {
-            sb.AppendLine("<div class='item'>");
-            sb.AppendLine($"<span>Tax:</span>");
-            sb.AppendLine($"<span>${receipt.Tax:F2}</span>");
-            sb.AppendLine("</div>");
-        }
-        
-        sb.AppendLine("<div class='divider'></div>");
-        
-        sb.AppendLine("<div class='item total'>");
-        sb.AppendLine($"<span>TOTAL:</span>");
-        sb.AppendLine($"<span>${receipt.TotalAmount:F2}</span>");
-        sb.AppendLine("</div>");
-        
-        if (receipt.PaymentAmount > 0)
-        {
-            sb.AppendLine("<div class='item'>");
-            sb.AppendLine($"<span>Payment:</span>");
-            sb.AppendLine($"<span>${receipt.PaymentAmount:F2}</span>");
-            sb.AppendLine("</div>");
-            
-            if (receipt.Balance != 0)
-            {
-                sb.AppendLine("<div class='item balance'>");
-                sb.AppendLine($"<span>{(receipt.Balance >= 0 ? "Change:" : "Balance Due:")}</span>");
-                sb.AppendLine($"<span>${Math.Abs(receipt.Balance):F2}</span>");
-                sb.AppendLine("</div>");
-            }
-        }
-        
-        sb.AppendLine("<div class='divider'></div>");
-        
-        sb.AppendLine("<p style='text-align: center; margin-top: 20px;'>Thank you for your purchase!</p>");
-        
+        sb.AppendLine("</td>");
+        sb.AppendLine($"<td class='label' style='text-align: right;'>{receipt.PaymentMethod}</td>");
+        sb.AppendLine("<td colspan='2'>Total :</td>");
+        sb.AppendLine($"<td>{receipt.TotalAmount:N0}</td>");
+        sb.AppendLine("</tr>");
+        sb.AppendLine("<tr>");
+        sb.AppendLine("<td></td>");
+        // sb.AppendLine($"<td class='label'>Advance :</td>");
+        // sb.AppendLine($"<td>{receipt.Advance:N0}</td>");
+        // sb.AppendLine("</tr>");
+        // sb.AppendLine("<tr>");
+        // sb.AppendLine("<td></td>");
+        // sb.AppendLine($"<td class='label'>Balance :</td>");
+        // sb.AppendLine($"<td>{receipt.Balance:N0}</td>");
+        sb.AppendLine("</tr>");
+        sb.AppendLine("</table>");
         sb.AppendLine("</body>");
         sb.AppendLine("</html>");
-        
+
         return sb.ToString();
     }
 
@@ -251,7 +347,7 @@ public class PrintController : ControllerBase
         // Items
         e.Graphics.DrawString("Items:", boldFont, brush, 20, y);
         y += lineHeight;
-        
+
         foreach (var item in _currentReceipt.Items)
         {
             var itemText = $"{item.ProductName} x{item.Quantity}";
@@ -267,7 +363,7 @@ public class PrintController : ControllerBase
         e.Graphics.DrawString($"Tax: ${_currentReceipt.Tax:F2}", font, brush, 20, y);
         y += lineHeight * 2;
         e.Graphics.DrawString($"TOTAL: ${_currentReceipt.TotalAmount:F2}", boldFont, brush, 20, y);
-        
+
         y += lineHeight * 3;
         e.Graphics.DrawString("Thank you for your purchase!", font, brush, 30, y);
 
