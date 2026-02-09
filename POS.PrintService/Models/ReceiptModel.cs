@@ -13,6 +13,7 @@ public class ReceiptModel
     public decimal PaymentAmount { get; set; }
     public decimal Balance { get; set; }
     public List<ReceiptItem> Items { get; set; } = new();
+    public string? LogoBase64 { get; set; } = string.Empty;
 }
 
 public class ReceiptItem
