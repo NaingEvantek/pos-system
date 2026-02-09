@@ -1,5 +1,6 @@
 import React from "react";
 import { logout, getCurrentUser } from "../services/api";
+import logo from "../assets/images/zllogo4.png";
 
 function Sidebar({ currentView, onViewChange, onLogout }) {
   const user = getCurrentUser();
@@ -22,8 +23,13 @@ function Sidebar({ currentView, onViewChange, onLogout }) {
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <h2>POS System</h2>
-        <p>Point of Sale</p>
+        <div class="sidebar-logo">
+          <img src={logo} width={55} height={55} alt="ZarLi Logo" />
+          <div>
+            <h2>ZarLi</h2>
+            <p>fashion & garment</p>
+          </div>
+        </div>
       </div>
 
       {/* {user && (

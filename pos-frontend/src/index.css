@@ -1366,6 +1366,14 @@ padding:10px;
     display: none;
   }
   
+    .sidebar-logo{
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    vertical-align: middle;
+    font-size: 18px
+  }
+  
   .main-container {
     margin-left: 60px;
   }
