@@ -1,15 +1,16 @@
-import React from 'react';
-import { logout, getCurrentUser } from '../services/api';
+import React from "react";
+import { logout, getCurrentUser } from "../services/api";
+import logo from "../assets/images/zllogo4.png";
 
 function Sidebar({ currentView, onViewChange, onLogout }) {
   const user = getCurrentUser();
 
   const menuItems = [
-    { id: 'pos', label: '🛒 Point of Sale', icon: '💳' },
-    { id: 'products', label: '📦 Manage Products', icon: '📦' },
-    { id: 'customers', label: '👥 Customers', icon: '👥' },
-    { id: 'sales', label: '📊 Sales History', icon: '📊' },
-    { id: 'reports', label: '📈 Reports', icon: '📈' },
+    { id: "pos", label: "Point of Sale", icon: "🛒" },
+    { id: "products", label: "Manage Products", icon: "📦" },
+    { id: "customers", label: "Customers", icon: "👥" },
+    { id: "sales", label: "Sales History", icon: "📊" },
+    { id: "reports", label: "Reports", icon: "📈" },
   ];
 
   const handleLogout = () => {
@@ -22,27 +23,34 @@ function Sidebar({ currentView, onViewChange, onLogout }) {
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <h2>POS System</h2>
-        <p>Point of Sale</p>
+        <div class="sidebar-logo">
+          <img src={logo} width={55} height={55} alt="ZarLi Logo" />
+          <div>
+            <h2>ZarLi</h2>
+            <p>fashion & garment</p>
+          </div>
+        </div>
       </div>
 
-      {user && (
+      {/* {user && (
         <div className="user-info">
           <div className="user-avatar">
-            {user.fullName?.charAt(0)?.toUpperCase() || user.username?.charAt(0)?.toUpperCase() || 'U'}
+            {user.fullName?.charAt(0)?.toUpperCase() ||
+              user.username?.charAt(0)?.toUpperCase() ||
+              "U"}
           </div>
           <div className="user-details">
             <div className="user-name">{user.fullName || user.username}</div>
             <div className="user-role">{user.role}</div>
           </div>
         </div>
-      )}
-      
+      )} */}
+
       <nav className="sidebar-nav">
-        {menuItems.map(item => (
+        {menuItems.map((item) => (
           <button
             key={item.id}
-            className={`nav-item ${currentView === item.id ? 'active' : ''}`}
+            className={`nav-item ${currentView === item.id ? "active" : ""}`}
             onClick={() => onViewChange(item.id)}
           >
             <span className="nav-icon">{item.icon}</span>

@@ -31,6 +31,30 @@ public class POSDbContext : DbContext
             new Product { Id = 5, Name = "Headphones", Description = "Noise Cancelling", Price = 150000, RetailPrice = 150000, WholesalePrice = 120000, Stock = 0, Category = "Electronics" }
         );
 
+        modelBuilder.Entity<User>().HasData(
+                    new User
+                    {
+                        Id = 1,
+                        Username = "admin",
+                        Email = "admin@pos.com",
+                        PasswordHash = "$2a$12$P2UjP6sSt5IURLIIl3NrMONs4Nxo7XYdi2uTy4loHEiiO0Y408fja", // admin123
+                        FullName = "System Administrator",
+                        Role = UserRole.Admin,
+                        IsActive = true,
+                        CreatedAt = DateTime.Now
+                    },
+                    new User
+                    {
+                        Id = 2,
+                        Username = "cashier",
+                        Email = "cashier@pos.com",
+                        PasswordHash = "$2a$12$P2UjP6sSt5IURLIIl3NrMONs4Nxo7XYdi2uTy4loHEiiO0Y408fja", // admin123
+                        FullName = "Default Cashier",
+                        Role = UserRole.Cashier,
+                        IsActive = true,
+                        CreatedAt = DateTime.Now
+                    }
+                );
         // Configure relationships
         modelBuilder.Entity<Sale>()
             .HasMany(s => s.Items)
