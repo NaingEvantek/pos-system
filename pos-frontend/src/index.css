@@ -48,6 +48,14 @@ code {
   margin-bottom: 5px;
 }
 
+.sidebar-logo{
+    display: flex !important;
+    justify-content: flex-start;
+    align-items: center;
+    vertical-align: bottom;
+    font-size: 18px
+  }
+
 .sidebar-header p {
   font-size: 12px;
   opacity: 0.8;
@@ -1102,6 +1110,14 @@ code {
 
 .customer-address{
 resize: none;
+width: 100%;
+border-radius: 5px;
+border:1px solid #e9ecef;
+padding:10px;
+}
+
+.product-description{
+  resize: none;
 width: 100%;
 border-radius: 5px;
 border:1px solid #e9ecef;

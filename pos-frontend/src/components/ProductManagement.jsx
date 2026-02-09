@@ -181,6 +181,11 @@ function ProductManagement() {
               <label>Description</label>
               <textarea
                 name="description"
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck="false"
+                autoComplete="off"
+                className="product-description"
                 value={formData.description}
                 onChange={handleInputChange}
                 placeholder="Enter product description"
