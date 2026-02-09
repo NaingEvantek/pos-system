@@ -15,7 +15,7 @@ import CustomerManagement from "./components/CustomerManagement";
 import SalesHistory from "./components/SalesHistory";
 import Reports from "./components/Reports";
 import "./index.css";
-import logo from "../assets/images/zllogo4.png";
+import logo from "./assets/images/zllogo4.png";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
