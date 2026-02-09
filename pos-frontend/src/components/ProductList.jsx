@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 function ProductList({ products, onAddToCart }) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('All');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("All");
 
   // Get unique categories
-  const categories = ['All', ...new Set(products.map(p => p.category))];
+  const categories = ["All", ...new Set(products.map((p) => p.category))];
 
   // Filter products
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === 'All' || product.category === categoryFilter;
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      categoryFilter === "All" || product.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
 
@@ -32,8 +34,10 @@ function ProductList({ products, onAddToCart }) {
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
           >
-            {categories.map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
             ))}
           </select>
         </div>
@@ -45,16 +49,16 @@ function ProductList({ products, onAddToCart }) {
         </div>
       ) : (
         <div className="products-grid">
-          {filteredProducts.map(product => (
-            <div 
-              key={product.id} 
+          {filteredProducts.map((product) => (
+            <div
+              key={product.id}
               className="product-card"
               onClick={() => onAddToCart(product)}
             >
               <h3>{product.name}</h3>
-              <p className="price">${product.price.toFixed(2)}</p>
+              <p className="price">MMK {product.price.toLocaleString()}</p>
               <p className="stock">Stock: {product.stock}</p>
-              <p style={{ fontSize: '12px', color: '#999', marginTop: '5px' }}>
+              <p style={{ fontSize: "12px", color: "#999", marginTop: "5px" }}>
                 {product.category}
               </p>
             </div>

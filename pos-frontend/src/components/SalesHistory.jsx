@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { getSales, getTodaySales } from '../services/api';
+import React, { useState, useEffect } from "react";
+import { getSales, getTodaySales } from "../services/api";
 
 function SalesHistory() {
   const [sales, setSales] = useState([]);
   const [todayStats, setTodayStats] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [selectedSale, setSelectedSale] = useState(null);
 
   useEffect(() => {
@@ -18,28 +18,40 @@ function SalesHistory() {
       setLoading(true);
       const data = await getSales();
       setSales(data);
-      setError('');
+      setError("");
     } catch (err) {
-      setError('Failed to load sales history');
+      setError("Failed to load sales history");
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
-
+  console.log(sales);
   const loadTodayStats = async () => {
     try {
       const data = await getTodaySales();
       setTodayStats(data);
     } catch (err) {
-      console.error('Failed to load today stats:', err);
+      console.error("Failed to load today stats:", err);
     }
   };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
   };
+
+  // function formatDate(date) {
+  //   const options = {
+  //     day: "2-digit",
+  //     month: "short",
+  //     year: "numeric",
+  //     hour: "2-digit",
+  //     minute: "2-digit",
+  //     hour12: true,
+  //   };
+  //   return new Intl.DateTimeFormat("en-US", options).format(date);
+  // }
 
   return (
     <div className="sales-history">
@@ -61,10 +73,10 @@ function SalesHistory() {
               <p>Today's Sales</p>
             </div>
           </div>
-          <div className="stat-card">
+          <div className="stat-card stat-card-mmk">
             <div className="stat-icon">💰</div>
             <div className="stat-content">
-              <h3>${todayStats.totalRevenue?.toFixed(2)}</h3>
+              <h3>{todayStats.totalRevenue?.toLocaleString()}</h3>
               <p>Today's Revenue</p>
             </div>
           </div>
@@ -86,45 +98,64 @@ function SalesHistory() {
               <th>Date & Time</th>
               <th>Customer</th>
               <th>Items</th>
-              <th>Payment</th>
               <th>Subtotal</th>
-              <th>Tax</th>
+              <th>Dis.</th>
               <th>Total</th>
+              <th>Payment</th>
+              <th>Balance</th>
               <th>Details</th>
             </tr>
           </thead>
           <tbody>
             {loading && sales.length === 0 ? (
               <tr>
-                <td colSpan="9" style={{ textAlign: 'center', padding: '40px' }}>
+                <td
+                  colSpan="9"
+                  style={{ textAlign: "center", padding: "40px" }}
+                >
                   Loading sales...
                 </td>
               </tr>
             ) : sales.length === 0 ? (
               <tr>
-                <td colSpan="9" style={{ textAlign: 'center', padding: '40px' }}>
+                <td
+                  colSpan="9"
+                  style={{ textAlign: "center", padding: "40px" }}
+                >
                   No sales found. Make your first sale!
                 </td>
               </tr>
             ) : (
-              sales.map(sale => (
+              sales.map((sale) => (
                 <tr key={sale.id}>
                   <td className="receipt-id">#{sale.id}</td>
                   <td>{formatDate(sale.saleDate)}</td>
-                  <td>{sale.customerName || 'Walk-in'}</td>
-                  <td className="items-count">{sale.items?.length || 0} items</td>
-                  <td>
-                    <span className="payment-badge">{sale.paymentMethod}</span>
+                  <td>{sale.customerName || "Walk-in"}</td>
+                  <td className="items-count">
+                    {sale.items?.length || 0} items
                   </td>
-                  <td>${sale.subtotal?.toFixed(2)}</td>
-                  <td>${sale.tax?.toFixed(2)}</td>
-                  <td className="total-amount">${sale.totalAmount?.toFixed(2)}</td>
+
+                  <td>{sale.subtotal?.toLocaleString()}</td>
+                  <td>{sale.discount.toLocaleString()}</td>
+                  <td className="total-amount">
+                    {sale.totalAmount?.toLocaleString()}
+                  </td>
+                  <td className="payment-amount">
+                    {sale.paymentAmount?.toLocaleString()}
+                  </td>
+                  <td className="sale-balance-amount">
+                    {(sale.totalAmount - sale.paymentAmount).toLocaleString()}
+                  </td>
                   <td>
-                    <button 
+                    <button
                       className="btn-icon"
-                      onClick={() => setSelectedSale(selectedSale?.id === sale.id ? null : sale)}
+                      onClick={() =>
+                        setSelectedSale(
+                          selectedSale?.id === sale.id ? null : sale,
+                        )
+                      }
                     >
-                      {selectedSale?.id === sale.id ? '▲' : '▼'}
+                      {selectedSale?.id === sale.id ? "▲" : "▼"}
                     </button>
                   </td>
                 </tr>
@@ -135,13 +166,24 @@ function SalesHistory() {
       </div>
 
       {selectedSale && (
-        <div className="sale-details-modal" onClick={() => setSelectedSale(null)}>
-          <div className="sale-details-card" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="sale-details-modal"
+          onClick={() => setSelectedSale(null)}
+        >
+          <div
+            className="sale-details-card"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-header">
               <h3>Sale Details - Receipt #{selectedSale.id}</h3>
-              <button className="btn-close" onClick={() => setSelectedSale(null)}>✕</button>
+              <button
+                className="btn-close"
+                onClick={() => setSelectedSale(null)}
+              >
+                ✕
+              </button>
             </div>
-            
+
             <div className="modal-body">
               <div className="detail-row">
                 <span>Date:</span>
@@ -149,14 +191,16 @@ function SalesHistory() {
               </div>
               <div className="detail-row">
                 <span>Customer:</span>
-                <span>{selectedSale.customerName || 'Walk-in Customer'}</span>
+                <span>{selectedSale.customerName || "Walk-in Customer"}</span>
               </div>
               <div className="detail-row">
                 <span>Payment Method:</span>
                 <span>{selectedSale.paymentMethod}</span>
               </div>
 
-              <h4 style={{ marginTop: '20px', marginBottom: '10px' }}>Items:</h4>
+              <h4 style={{ marginTop: "20px", marginBottom: "10px" }}>
+                Items:
+              </h4>
               <table className="items-table">
                 <thead>
                   <tr>
@@ -171,8 +215,8 @@ function SalesHistory() {
                     <tr key={index}>
                       <td>{item.productName}</td>
                       <td>{item.quantity}</td>
-                      <td>${item.unitPrice?.toFixed(2)}</td>
-                      <td>${item.total?.toFixed(2)}</td>
+                      <td>{item.unitPrice?.toLocaleString()}</td>
+                      <td>{item.total?.toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -181,15 +225,15 @@ function SalesHistory() {
               <div className="detail-totals">
                 <div className="detail-row">
                   <span>Subtotal:</span>
-                  <span>${selectedSale.subtotal?.toFixed(2)}</span>
+                  <span>{selectedSale.subtotal?.toLocaleString()}</span>
                 </div>
                 <div className="detail-row">
-                  <span>Tax (10%):</span>
-                  <span>${selectedSale.tax?.toFixed(2)}</span>
+                  <span>Discount :</span>
+                  <span>{selectedSale.discount?.toLocaleString()}</span>
                 </div>
                 <div className="detail-row total">
                   <span>Total:</span>
-                  <span>${selectedSale.totalAmount?.toFixed(2)}</span>
+                  <span>{selectedSale.totalAmount?.toLocaleString()}</span>
                 </div>
               </div>
             </div>

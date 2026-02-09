@@ -1,24 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { getCustomers, createCustomer, updateCustomer, deleteCustomer, getCustomerDebitBalance } from '../services/api';
+import React, { useState, useEffect } from "react";
+import {
+  getCustomers,
+  createCustomer,
+  updateCustomer,
+  deleteCustomer,
+  getCustomerDebitBalance,
+} from "../services/api";
 
 function CustomerManagement() {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
-  const [filterType, setFilterType] = useState('All');
-  
+  const [filterType, setFilterType] = useState("All");
+
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    address: '',
-    type: 0
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
+    type: 2,
   });
 
-  const customerTypes = ['WalkIn', 'Online', 'Royal'];
+  const customerTypes = ["WalkIn", "Online", "Royal"];
 
   useEffect(() => {
     loadCustomers();
@@ -29,9 +35,9 @@ function CustomerManagement() {
       setLoading(true);
       const data = await getCustomers();
       setCustomers(data);
-      setError('');
+      setError("");
     } catch (err) {
-      setError('Failed to load customers');
+      setError("Failed to load customers");
       console.error(err);
     } finally {
       setLoading(false);
@@ -40,38 +46,38 @@ function CustomerManagement() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       setLoading(true);
-      setError('');
-      
+      setError("");
+
       const customerData = {
         ...formData,
-        type: parseInt(formData.type)
+        type: parseInt(formData.type),
       };
 
       if (editingCustomer) {
         await updateCustomer(editingCustomer.id, customerData);
-        setSuccess('Customer updated successfully!');
+        setSuccess("Customer updated successfully!");
       } else {
         await createCustomer(customerData);
-        setSuccess('Customer created successfully!');
+        setSuccess("Customer created successfully!");
       }
 
       resetForm();
       loadCustomers();
-      
-      setTimeout(() => setSuccess(''), 3000);
+
+      setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
-      setError('Failed to save customer: ' + err.message);
+      setError("Failed to save customer: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -84,24 +90,24 @@ function CustomerManagement() {
       phone: customer.phone,
       email: customer.email,
       address: customer.address,
-      type: customerTypes.indexOf(customer.type)
+      type: customerTypes.indexOf(customer.type),
     });
     setShowForm(true);
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this customer?')) {
+    if (!window.confirm("Are you sure you want to delete this customer?")) {
       return;
     }
 
     try {
       setLoading(true);
       await deleteCustomer(id);
-      setSuccess('Customer deleted successfully!');
+      setSuccess("Customer deleted successfully!");
       loadCustomers();
-      setTimeout(() => setSuccess(''), 3000);
+      setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
-      setError('Failed to delete customer: ' + err.message);
+      setError("Failed to delete customer: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -109,19 +115,20 @@ function CustomerManagement() {
 
   const resetForm = () => {
     setFormData({
-      name: '',
-      phone: '',
-      email: '',
-      address: '',
-      type: 0
+      name: "",
+      phone: "",
+      email: "",
+      address: "",
+      type: 0,
     });
     setEditingCustomer(null);
     setShowForm(false);
   };
 
-  const filteredCustomers = filterType === 'All' 
-    ? customers 
-    : customers.filter(c => c.type === filterType);
+  const filteredCustomers =
+    filterType === "All"
+      ? customers
+      : customers.filter((c) => c.type === filterType);
 
   return (
     <div className="customer-management">
@@ -138,11 +145,11 @@ function CustomerManagement() {
             <option value="Online">Online</option>
             <option value="Royal">Royal</option>
           </select>
-          <button 
+          <button
             className="btn btn-primary"
             onClick={() => setShowForm(!showForm)}
           >
-            {showForm ? '✕ Cancel' : '+ Add Customer'}
+            {showForm ? "✕ Cancel" : "+ Add Customer"}
           </button>
         </div>
       </div>
@@ -152,7 +159,7 @@ function CustomerManagement() {
 
       {showForm && (
         <div className="customer-form-card">
-          <h3>{editingCustomer ? 'Edit Customer' : 'Add New Customer'}</h3>
+          <h3>{editingCustomer ? "Edit Customer" : "Add New Customer"}</h3>
           <form onSubmit={handleSubmit} className="customer-form">
             <div className="form-row">
               <div className="form-group">
@@ -160,6 +167,7 @@ function CustomerManagement() {
                 <input
                   type="text"
                   name="name"
+                  autoComplete="off"
                   value={formData.name}
                   onChange={handleInputChange}
                   required
@@ -172,6 +180,7 @@ function CustomerManagement() {
                 <input
                   type="tel"
                   name="phone"
+                  autoComplete="off"
                   value={formData.phone}
                   onChange={handleInputChange}
                   required
@@ -186,6 +195,7 @@ function CustomerManagement() {
                 <input
                   type="email"
                   name="email"
+                  autoComplete="off"
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="Email address"
@@ -200,7 +210,6 @@ function CustomerManagement() {
                   onChange={handleInputChange}
                   required
                 >
-                  <option value="0">Walk-In</option>
                   <option value="1">Online</option>
                   <option value="2">Royal (Credit)</option>
                 </select>
@@ -210,20 +219,37 @@ function CustomerManagement() {
             <div className="form-group">
               <label>Address</label>
               <textarea
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck="false"
+                className="customer-address"
                 name="address"
                 value={formData.address}
                 onChange={handleInputChange}
                 placeholder="Customer address"
-                rows="2"
+                rows="5"
               />
             </div>
 
             <div className="form-actions">
-              <button type="button" className="btn btn-secondary" onClick={resetForm}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={resetForm}
+              >
                 Cancel
               </button>
-              <button type="submit" className="btn btn-primary" disabled={loading}>
-                {loading ? 'Saving...' : (editingCustomer ? 'Update Customer' : 'Create Customer')}
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={loading}
+              >
+                {loading
+                  ? "Saving..."
+                  : editingCustomer
+                    ? "Update Customer"
+                    : "Create Customer"}
               </button>
             </div>
           </form>
@@ -247,43 +273,59 @@ function CustomerManagement() {
           <tbody>
             {loading && customers.length === 0 ? (
               <tr>
-                <td colSpan="8" style={{ textAlign: 'center', padding: '40px' }}>
+                <td
+                  colSpan="8"
+                  style={{ textAlign: "center", padding: "40px" }}
+                >
                   Loading customers...
                 </td>
               </tr>
             ) : filteredCustomers.length === 0 ? (
               <tr>
-                <td colSpan="8" style={{ textAlign: 'center', padding: '40px' }}>
+                <td
+                  colSpan="8"
+                  style={{ textAlign: "center", padding: "40px" }}
+                >
                   No customers found
                 </td>
               </tr>
             ) : (
-              filteredCustomers.map(customer => (
+              filteredCustomers.map((customer) => (
                 <tr key={customer.id}>
                   <td>{customer.id}</td>
                   <td className="customer-name">{customer.name}</td>
                   <td>{customer.phone}</td>
-                  <td>{customer.email || '-'}</td>
+                  <td>{customer.email || "-"}</td>
                   <td>
-                    <span className={`type-badge type-${customer.type.toLowerCase()}`}>
+                    <span
+                      className={`type-badge type-${customer.type.toLowerCase()}`}
+                    >
                       {customer.type}
                     </span>
                   </td>
                   <td>
                     {customer.currentDebit > 0 ? (
-                      <span className="debit-amount">{customer.currentDebit.toLocaleString()} MMK</span>
-                    ) : '-'}
+                      <span className="debit-amount">
+                        {customer.currentDebit.toLocaleString()} MMK
+                      </span>
+                    ) : (
+                      "-"
+                    )}
                   </td>
-                  <td>{customer.lastPurchase ? new Date(customer.lastPurchase).toLocaleDateString() : 'Never'}</td>
+                  <td>
+                    {customer.lastPurchase
+                      ? new Date(customer.lastPurchase).toLocaleDateString()
+                      : "Never"}
+                  </td>
                   <td className="actions">
-                    <button 
+                    <button
                       className="btn-icon btn-edit"
                       onClick={() => handleEdit(customer)}
                       title="Edit"
                     >
                       ✏️
                     </button>
-                    <button 
+                    <button
                       className="btn-icon btn-delete"
                       onClick={() => handleDelete(customer.id)}
                       title="Delete"

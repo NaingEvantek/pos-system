@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 const API_BASE_URL =
-  import.meta.env.API_BASE_URL;
+  import.meta.env.VITE_Backend_API_URL;
 const PRINT_SERVICE_URL =
-  import.meta.env.PRINT_SERVICE_URL;
+  import.meta.env.VITE_PRINT_SERVICE_URL;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -30,7 +30,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response ? .status === 401) {
+    if (error.response.status === 401) {
       // Token expired or invalid, redirect to login
       localStorage.removeItem('token');
       localStorage.removeItem('user');
