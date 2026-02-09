@@ -74,37 +74,38 @@ function App() {
   const addToCart = (product) => {
     const existingItem = cart.find((item) => item.productId === product.id);
 
-    if (product.stock > 0 && existingItem?.quantity <= product.stock) {
-      if (existingItem) {
-        setCart(
-          cart.map((item) =>
-            item.productId === product.id
-              ? {
-                  ...item,
-                  quantity: item.quantity + 1,
-                  total: (item.quantity + 1) * item.unitPrice,
-                }
-              : item,
-          ),
-        );
-      } else {
-        setCart([
-          ...cart,
-          {
-            productId: product.id,
-            productName: product.name,
-            quantity: 1,
-            unitPrice: product.price,
-            total: product.price,
-          },
-        ]);
-      }
+    if (existingItem) {
+      setCart(
+        cart.map((item) =>
+          item.productId === product.id
+            ? {
+                ...item,
+                quantity: item.quantity + 1,
+                total: (item.quantity + 1) * item.unitPrice,
+              }
+            : item,
+        ),
+      );
     } else {
-      setError(`Insufficient stock for this product : ${product.name}`);
-      setTimeout(() => {
-        setError("");
-      }, 3000);
+      setCart([
+        ...cart,
+        {
+          productId: product.id,
+          productName: product.name,
+          quantity: 1,
+          unitPrice: product.price,
+          total: product.price,
+        },
+      ]);
     }
+    // if (product.stock > 0 && existingItem?.quantity <= product.stock) {
+
+    // } else {
+    //   setError(`Insufficient stock for this product : ${product.name}`);
+    //   setTimeout(() => {
+    //     setError("");
+    //   }, 3000);
+    // }
   };
 
   const updateQuantity = (productId, delta) => {
